@@ -5,7 +5,7 @@ namespace App\Plugins\Seo;
 /**
  * @name Seo
  * @package 搜索引擎优化插件
- * @version 1.0.0
+ * @version 1.0.1
  * @author zhuchunshu
  * @link https://github.com/zhuchunshu
  */

@@ -7,6 +7,7 @@
         <div class="row row-cards">
 
             @include('Seo::admin.sitemap')
+            @include('Seo::admin.baidu')
 
         </div>
 

@@ -8,6 +8,7 @@
                 <li>tag: <a href="{{url('/plugins/Seo/sitemap-tag.xml')}}">{{url('/plugins/Seo/sitemap-tag.xml')}}</a></li>
                 <li>users: <a href="{{url('/plugins/Seo/sitemap-users.xml')}}">{{url('/plugins/Seo/sitemap-users.xml')}}</a></li>
             </ul>
+            <small>每一分钟会更新一次</small>
         </div>
     </div>
 </div>

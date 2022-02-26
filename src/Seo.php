@@ -9,6 +9,7 @@ use App\Plugins\User\src\Models\User;
 use Hyperf\Crontab\Annotation\Crontab;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\GetMapping;
+use Hyperf\RateLimit\Annotation\RateLimit;
 use samdark\sitemap\Sitemap;
 use Swoole\Coroutine\System;
 
@@ -19,19 +20,8 @@ class Seo
 	#[GetMapping(path:"getUrl")]
 	public function getUrl(){
 		$urls = array_merge($this->getTopicUrl(),$this->getTagUrl(),$this->getUsersUrl());
-		foreach($urls as $url) {
-			if(!SeoUrl::query()->where("url",$url)->exists()){
-				SeoUrl::query()->create([
-					'url' => $url,
-					'class' => 'all'
-				]);
-			}
-		}
-		$arr = [];
-		foreach(SeoUrl::query()->where("class",'all')->get(['url']) as $value){
-			$arr[]=$value->url;
-		}
-		return $arr;
+		
+		return $urls;
 	}
 	#[GetMapping(path:"makeSitemap")]
 	public function makeSitemap(){
@@ -82,14 +72,6 @@ class Seo
 		foreach(Topic::query()->where("status",'publish')->get() as $value){
 			$urls[]=url("/".$value->id.".html");
 		}
-		foreach($urls as $url) {
-			if(!SeoUrl::query()->where("url",$url)->exists()){
-				SeoUrl::query()->create([
-					'url' => $url,
-					'class' => 'topic'
-				]);
-			}
-		}
 		return $urls;
 		
 	}
@@ -101,16 +83,34 @@ class Seo
 		foreach(TopicTag::query()->get() as $value){
 			$urls[]=url("/tags/".$value->id.".html");
 		}
-		foreach($urls as $url) {
-			if(!SeoUrl::query()->where("url",$url)->exists()){
+		return $urls;
+		
+	}
+	
+	#[GetMapping(path:"submit")]
+	#[RateLimit(create:1, consume:1, capacity:1)]
+	public function submit(){
+		$urls = [];
+		foreach($this->getUrl() as $url){
+			if(!SeoUrl::query()->where(['class' => 'submit','url' => $url])->exists()){
+				$urls[]=$url;
 				SeoUrl::query()->create([
+					'class' => 'submit',
 					'url' => $url,
-					'class' => 'tag'
 				]);
 			}
 		}
-		return $urls;
-		
+		$api = 'http://data.zz.baidu.com/urls?site='.get_options_nocache('seo_baidu_url').'&token='.get_options_nocache('seo_baidu_token');
+		$ch = curl_init();
+		$options =  array(
+			CURLOPT_URL => $api,
+			CURLOPT_POST => true,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_POSTFIELDS => implode("\n", $urls),
+			CURLOPT_HTTPHEADER => array('Content-Type: text/plain'),
+		);
+		curl_setopt_array($ch, $options);
+		return curl_exec($ch);
 	}
 	
 	#[GetMapping(path:"getUsersUrl")]
@@ -119,14 +119,6 @@ class Seo
 		$urls = [];
 		foreach(User::query()->get() as $value){
 			$urls[]=url("/users/".$value->username.".html");
-		}
-		foreach($urls as $url) {
-			if(!SeoUrl::query()->where("url",$url)->exists()){
-				SeoUrl::query()->create([
-					'url' => $url,
-					'class' => 'users'
-				]);
-			}
 		}
 		return $urls;
 		

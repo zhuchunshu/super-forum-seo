@@ -32,7 +32,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '911daa563171a4f68a591947769066c65c3aceda',
+    'reference' => 'dc8e03c1fad71cc0b01ba315204b42a6be679c6f',
     'name' => '__root__',
   ),
   'versions' => 
@@ -44,7 +44,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '911daa563171a4f68a591947769066c65c3aceda',
+      'reference' => 'dc8e03c1fad71cc0b01ba315204b42a6be679c6f',
     ),
     'samdark/sitemap' => 
     array (
