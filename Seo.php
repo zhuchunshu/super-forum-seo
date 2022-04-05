@@ -12,7 +12,6 @@ namespace App\Plugins\Seo;
 class Seo
 {
 	public function handler(){
-		require_once __DIR__ . '/vendor/autoload.php';
 		$this->bootstrap();
 		
 	}

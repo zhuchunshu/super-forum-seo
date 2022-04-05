@@ -20,8 +20,13 @@ class Seo
 	#[GetMapping(path:"getUrl")]
 	public function getUrl(){
 		$urls = array_merge($this->getTopicUrl(),$this->getTagUrl(),$this->getUsersUrl());
-		
-		return $urls;
+		foreach(Itf()->get("SeoUrl") as $value){
+			if(count($value)===2 && @method_exists(new $value[0](),$value[1])){
+				$method = $value[1];
+				$urls[]=(new $value[0])->$method();
+			}
+		}
+		return @array_unique($urls);
 	}
 	#[GetMapping(path:"makeSitemap")]
 	public function makeSitemap(){
